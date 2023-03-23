@@ -1,10 +1,25 @@
-# URL Shortener, GraphQL Edition
+# Ledger
 
 This Encore example shows how you can build a GraphQL server with Encore.
 
 ## Run the application
+
+Start the database
+```bash
+docker compose up
+```
+
+Run the application
+
 ```bash
 $ encore run
+```
+
+## GraphQL
+
+To generate new GQL entities use
+```bash
+ go run github.com/99designs/gqlgen generate
 ```
 
 ## View the GraphQL Playground

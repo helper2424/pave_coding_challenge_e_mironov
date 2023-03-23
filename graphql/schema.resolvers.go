@@ -8,26 +8,64 @@ import (
 	"context"
 
 	"encore.app/graphql/generated"
-	"encore.app/url"
+	"encore.app/graphql/model"
+	"encore.app/ledger"
 )
 
-// Shorten is the resolver for the shorten field.
-func (r *mutationResolver) Shorten(ctx context.Context, inputURL string) (*url.URL, error) {
-	return url.Shorten(ctx, &url.ShortenParams{URL: inputURL})
+// CreateAccount is the resolver for the createAccount field.
+func (r *mutationResolver) CreateAccount(ctx context.Context, input model.CreateAccountInput) (*model.MutationResult, error) {
+	ledger.CreateNewAccount(ctx, &ledger.CreateNewAccountParams{AccountId: input.ID, Amount: uint64(input.InitialAmount)})
+
+	return &model.MutationResult{Status: 0}, nil
 }
 
-// Urls is the resolver for the urls field.
-func (r *queryResolver) Urls(ctx context.Context) ([]*url.URL, error) {
-	resp, err := url.List(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return resp.URLs, nil
+// Authorize is the resolver for the authorize field.
+func (r *mutationResolver) Authorize(ctx context.Context, input model.AuthorizeInput) (*model.MutationResult, error) {
+	ledger.Authorize(ctx, &ledger.AuthorizeParams{
+		Amount:    uint64(input.Amount),
+		AccountId: input.AccountID,
+	})
+
+	return &model.MutationResult{Status: 0}, nil
 }
 
-// Get is the resolver for the get field.
-func (r *queryResolver) Get(ctx context.Context, id string) (*url.URL, error) {
-	return url.Get(ctx, id)
+// Present is the resolver for the present field.
+func (r *mutationResolver) Present(ctx context.Context, input model.PresentInput) (*model.MutationResult, error) {
+	ledger.Present(ctx, &ledger.PresentParams{
+		Amount:    uint64(input.Amount),
+		AccountId: input.AccountID,
+	})
+
+	return &model.MutationResult{Status: 0}, nil
+}
+
+// Accounts is the resolver for the accounts field.
+func (r *queryResolver) Accounts(ctx context.Context, input model.AccountsInput) ([]*model.Account, error) {
+	//client, _ := db.Get(ctx)
+	//
+	//uint128Ids := make([]tb_types.Uint128, len(input.AccountID))
+	//
+	//for i, id := range input.AccountID {
+	//	uint128Ids[i], _ = tb_types.HexStringToUint128(*id)
+	//}
+	//
+	//accounts, err := (*client).LookupAccounts(uint128Ids)
+	//
+	//if err != nil {
+	//	log.Println("Can' take accoutns for ids", input.AccountID)
+	//	return nil, nil
+	//}
+	//
+	//models := make([]*model.Account, 0)
+	//
+	//for _, account := range accounts {
+	//	model := ledger.SerializeToModel(&account)
+	//	models = append(models, &model)
+	//}
+	//
+	//log.Println(models)
+
+	return nil, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

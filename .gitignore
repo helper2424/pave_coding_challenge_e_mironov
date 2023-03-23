@@ -16,3 +16,6 @@
 /.encore
 encore.gen.go
 encore.gen.cue
+
+data/*
+.idea/*

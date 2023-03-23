@@ -1,0 +1,8 @@
+services:
+  tigerbeetle_0:
+    image: ghcr.io/tigerbeetledb/tigerbeetle
+    command: "start --addresses=0.0.0.0:3000 /data/0_0.tigerbeetle"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/data
