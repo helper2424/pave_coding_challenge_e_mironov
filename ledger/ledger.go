@@ -5,6 +5,7 @@ import (
 	"encore.app/graphql/model"
 	"encore.app/ledger/workflow"
 	encore "encore.dev"
+	"errors"
 	"fmt"
 	tb_types "github.com/tigerbeetledb/tigerbeetle-go/pkg/types"
 	"log"
@@ -100,6 +101,11 @@ type GetAccountParams struct {
 
 //encore:api private
 func (s *Service) StartAccountWorkflow(ctx context.Context, input *StartAccountWorkflowParams) error {
+	if input.AccountId == "1" {
+		error_message := fmt.Sprintf("%s can't be used for creating account", input.AccountId)
+		return errors.New(error_message)
+	}
+
 	accId, err := tb_types.HexStringToUint128(input.AccountId)
 
 	if err != nil {
@@ -126,6 +132,11 @@ func (s *Service) StartAccountWorkflow(ctx context.Context, input *StartAccountW
 
 //encore:api private
 func (s *Service) Authorize(ctx context.Context, input *AuthorizeParams) error {
+	if input.AccountId == "1" {
+		error_message := fmt.Sprintf("%s can't be used for creating account", input.AccountId)
+		return errors.New(error_message)
+	}
+
 	err := s.client.SignalWorkflow(context.Background(), GetWorkflowId(input.AccountId), "", "Authorize", workflow.AuthorizeSignal{Amount: input.Amount})
 
 	if err != nil {
@@ -138,6 +149,11 @@ func (s *Service) Authorize(ctx context.Context, input *AuthorizeParams) error {
 
 //encore:api private
 func (s *Service) Present(ctx context.Context, input *PresentParams) error {
+	if input.AccountId == "1" {
+		error_message := fmt.Sprintf("%s can't be used for creating account", input.AccountId)
+		return errors.New(error_message)
+	}
+
 	err := s.client.SignalWorkflow(context.Background(), GetWorkflowId(input.AccountId), "", "Present", workflow.PresentSignal{Amount: input.Amount})
 
 	if err != nil {
@@ -150,6 +166,11 @@ func (s *Service) Present(ctx context.Context, input *PresentParams) error {
 
 //encore:api private
 func (s *Service) CreateNewAccount(ctx context.Context, input *CreateNewAccountParams) error {
+	if input.AccountId == "1" {
+		error_message := fmt.Sprintf("%s can't be used for creating account", input.AccountId)
+		return errors.New(error_message)
+	}
+
 	options := client.StartWorkflowOptions{
 		ID:        "create-new-account-workflow-" + input.AccountId,
 		TaskQueue: LedgerQueue,

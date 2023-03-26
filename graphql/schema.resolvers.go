@@ -6,6 +6,8 @@ package graphql
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	"encore.app/graphql/generated"
 	"encore.app/graphql/model"
@@ -14,27 +16,49 @@ import (
 
 // CreateAccount is the resolver for the createAccount field.
 func (r *mutationResolver) CreateAccount(ctx context.Context, input model.CreateAccountInput) (*model.MutationResult, error) {
-	ledger.CreateNewAccount(ctx, &ledger.CreateNewAccountParams{AccountId: input.ID, Amount: uint64(input.InitialAmount)})
+	err := ledger.CreateNewAccount(ctx, &ledger.CreateNewAccountParams{AccountId: input.ID, Amount: uint64(input.InitialAmount)})
+
+	if err != nil {
+		return &model.MutationResult{1}, err
+	}
 
 	return &model.MutationResult{Status: 0}, nil
 }
 
 // Authorize is the resolver for the authorize field.
 func (r *mutationResolver) Authorize(ctx context.Context, input model.AuthorizeInput) (*model.MutationResult, error) {
-	ledger.Authorize(ctx, &ledger.AuthorizeParams{
+	if input.Amount <= 0 {
+		error_message := fmt.Sprintf("The amount should be positive")
+		return &model.MutationResult{Status: 1}, errors.New(error_message)
+	}
+
+	err := ledger.Authorize(ctx, &ledger.AuthorizeParams{
 		Amount:    uint64(input.Amount),
 		AccountId: input.AccountID,
 	})
+
+	if err != nil {
+		return &model.MutationResult{Status: 1}, err
+	}
 
 	return &model.MutationResult{Status: 0}, nil
 }
 
 // Present is the resolver for the present field.
 func (r *mutationResolver) Present(ctx context.Context, input model.PresentInput) (*model.MutationResult, error) {
-	ledger.Present(ctx, &ledger.PresentParams{
+	if input.Amount <= 0 {
+		error_message := fmt.Sprintf("The amount should be positive")
+		return &model.MutationResult{Status: 1}, errors.New(error_message)
+	}
+
+	err := ledger.Present(ctx, &ledger.PresentParams{
 		Amount:    uint64(input.Amount),
 		AccountId: input.AccountID,
 	})
+
+	if err != nil {
+		return &model.MutationResult{1}, err
+	}
 
 	return &model.MutationResult{Status: 0}, nil
 }
