@@ -8,7 +8,7 @@ type Account struct {
 }
 
 type AccountsInput struct {
-	AccountID []*string `json:"accountId"`
+	AccountID string `json:"accountId"`
 }
 
 type AuthorizeInput struct {

@@ -1,5 +1,5 @@
 type Query {
-  accounts(input: AccountsInput!): [Account!]
+  account(input: AccountsInput!): Account
 }
 
 type Mutation {
@@ -28,7 +28,7 @@ input PresentInput {
 }
 
 input AccountsInput {
-  accountId: [ID]!
+  accountId: ID!
 }
 
 input CreateAccountInput {

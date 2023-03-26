@@ -59,7 +59,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Accounts func(childComplexity int, input model.AccountsInput) int
+		Account func(childComplexity int, input model.AccountsInput) int
 	}
 }
 
@@ -69,7 +69,7 @@ type MutationResolver interface {
 	Present(ctx context.Context, input model.PresentInput) (*model.MutationResult, error)
 }
 type QueryResolver interface {
-	Accounts(ctx context.Context, input model.AccountsInput) ([]*model.Account, error)
+	Account(ctx context.Context, input model.AccountsInput) (*model.Account, error)
 }
 
 type executableSchema struct {
@@ -144,17 +144,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.MutationResult.Status(childComplexity), true
 
-	case "Query.accounts":
-		if e.complexity.Query.Accounts == nil {
+	case "Query.account":
+		if e.complexity.Query.Account == nil {
 			break
 		}
 
-		args, err := ec.field_Query_accounts_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_account_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Accounts(childComplexity, args["input"].(model.AccountsInput)), true
+		return e.complexity.Query.Account(childComplexity, args["input"].(model.AccountsInput)), true
 
 	}
 	return 0, false
@@ -229,7 +229,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var sources = []*ast.Source{
 	{Name: "../schema.graphqls", Input: `type Query {
-  accounts(input: AccountsInput!): [Account!]
+  account(input: AccountsInput!): Account
 }
 
 type Mutation {
@@ -258,7 +258,7 @@ input PresentInput {
 }
 
 input AccountsInput {
-  accountId: [ID]!
+  accountId: ID!
 }
 
 input CreateAccountInput {
@@ -333,7 +333,7 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_accounts_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_account_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.AccountsInput
@@ -686,8 +686,8 @@ func (ec *executionContext) fieldContext_MutationResult_status(ctx context.Conte
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_accounts(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_accounts(ctx, field)
+func (ec *executionContext) _Query_account(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_account(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -700,7 +700,7 @@ func (ec *executionContext) _Query_accounts(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Accounts(rctx, fc.Args["input"].(model.AccountsInput))
+		return ec.resolvers.Query().Account(rctx, fc.Args["input"].(model.AccountsInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -708,12 +708,12 @@ func (ec *executionContext) _Query_accounts(ctx context.Context, field graphql.C
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Account)
+	res := resTmp.(*model.Account)
 	fc.Result = res
-	return ec.marshalOAccount2ᚕᚖencoreᚗappᚋgraphqlᚋmodelᚐAccountᚄ(ctx, field.Selections, res)
+	return ec.marshalOAccount2ᚖencoreᚗappᚋgraphqlᚋmodelᚐAccount(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_accounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_account(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -736,7 +736,7 @@ func (ec *executionContext) fieldContext_Query_accounts(ctx context.Context, fie
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_accounts_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_account_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -2661,7 +2661,7 @@ func (ec *executionContext) unmarshalInputAccountsInput(ctx context.Context, obj
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accountId"))
-			it.AccountID, err = ec.unmarshalNID2ᚕᚖstring(ctx, v)
+			it.AccountID, err = ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2912,7 +2912,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "accounts":
+		case "account":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -2921,7 +2921,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_accounts(ctx, field)
+				res = ec._Query_account(ctx, field)
 				return res
 			}
 
@@ -3270,16 +3270,6 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNAccount2ᚖencoreᚗappᚋgraphqlᚋmodelᚐAccount(ctx context.Context, sel ast.SelectionSet, v *model.Account) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._Account(ctx, sel, v)
-}
-
 func (ec *executionContext) unmarshalNAccountsInput2encoreᚗappᚋgraphqlᚋmodelᚐAccountsInput(ctx context.Context, v interface{}) (model.AccountsInput, error) {
 	res, err := ec.unmarshalInputAccountsInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -3323,32 +3313,6 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) unmarshalNID2ᚕᚖstring(ctx context.Context, v interface{}) ([]*string, error) {
-	var vSlice []interface{}
-	if v != nil {
-		vSlice = graphql.CoerceList(v)
-	}
-	var err error
-	res := make([]*string, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalOID2ᚖstring(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
-func (ec *executionContext) marshalNID2ᚕᚖstring(ctx context.Context, sel ast.SelectionSet, v []*string) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	for i := range v {
-		ret[i] = ec.marshalOID2ᚖstring(ctx, sel, v[i])
-	}
-
-	return ret
 }
 
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
@@ -3653,51 +3617,11 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
-func (ec *executionContext) marshalOAccount2ᚕᚖencoreᚗappᚋgraphqlᚋmodelᚐAccountᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Account) graphql.Marshaler {
+func (ec *executionContext) marshalOAccount2ᚖencoreᚗappᚋgraphqlᚋmodelᚐAccount(ctx context.Context, sel ast.SelectionSet, v *model.Account) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNAccount2ᚖencoreᚗappᚋgraphqlᚋmodelᚐAccount(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
+	return ec._Account(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
@@ -3723,22 +3647,6 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	res := graphql.MarshalBoolean(*v)
-	return res
-}
-
-func (ec *executionContext) unmarshalOID2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := graphql.UnmarshalID(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOID2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	res := graphql.MarshalID(*v)
 	return res
 }
 
