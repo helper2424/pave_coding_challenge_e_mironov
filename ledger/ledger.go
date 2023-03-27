@@ -24,6 +24,11 @@ func SerializeToModel(account *tb_types.Account) (*model.Account) {
 }
 
 func GetBalance(account *tb_types.Account) uint64 {
+	if account == nil {
+		// We could generate error here
+		return 0
+	}
+
 	return account.CreditsPosted - account.DebitsPosted - account.DebitsPending
 }
 
@@ -212,5 +217,6 @@ func (s *Service) GetAccount(ctx context.Context, input *GetAccountParams) (*mod
 }
 
 func GetWorkflowId(accountId string) string {
+	// return error if id is empty?
 	return "account-workflow-" + accountId
 }
