@@ -43,8 +43,8 @@ Run the application
 6. Via GQL or via Encore panel now you can Authorize and Present money from a newly created account, check `authorize`, `present` mutations and http://localhost:9400/pave-bank-odai/api#ledger.Authorize, http://localhost:9400/pave-bank-odai/api#ledger.Present.
 7. Also you can get account balance via 
 ```GQL
-query Accounts {
-    accounts(input: {accountId: "2"}) {
+query Account {
+    account(input: {accountId: "2"}) {
         id
         credits
     }
