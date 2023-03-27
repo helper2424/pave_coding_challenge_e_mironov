@@ -7,7 +7,7 @@ This is a toy ledger application that allow to:
 
 ## How to run
 
-0. Switch direcory to the project root
+0. Switch directory to the project root
 1. Create a new data file for Tigerbeetle cluster:
 ```bash
 docker run -v $(pwd)/data:/data ghcr.io/tigerbeetledb/tigerbeetle \
@@ -23,6 +23,7 @@ temporalite start --namespace default
 ```
 4. Start the Encore application
 ```bash
+go mod tidy
 encore run
 ```
 5. Now you can create a new account via GQL query or via internal Encore dashboard
